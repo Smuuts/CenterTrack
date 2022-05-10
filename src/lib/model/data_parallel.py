@@ -1,4 +1,5 @@
 import torch
+import os
 from torch.nn.modules import Module
 from torch.nn.parallel.scatter_gather import gather
 from torch.nn.parallel.replicate import replicate
