@@ -64,6 +64,9 @@ def main(opt):
       num_workers=opt.num_workers, pin_memory=True, drop_last=True
   )
 
+  print(f'Number of Epochs: {opt.num_epochs - start_epoch}')
+
+
   print('Starting training...')
   for epoch in range(start_epoch + 1, opt.num_epochs + 1):
     mark = epoch if opt.save_all else 'last'
