@@ -1,3 +1,4 @@
+.vscode
 videos/
 *.zip
 centernet_models/*
