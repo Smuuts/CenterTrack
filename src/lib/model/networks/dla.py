@@ -9,7 +9,7 @@ import numpy as np
 from os.path import join
 
 import torch
-from torch import nn
+from torch import ceil, nn
 import torch.nn.functional as F
 import torch.utils.model_zoo as model_zoo
 
@@ -52,13 +52,17 @@ class BasicBlock(nn.Module):
     def forward(self, x, residual=None):
         if residual is None:
             residual = x
-
+        
         out = self.conv1(x)
         out = self.bn1(out)
         out = self.relu(out)
 
         out = self.conv2(out)
         out = self.bn2(out)
+
+        # print(out.shape)
+        # print(residual.shape)
+        # print('_----------------------_')
 
         out += residual
         out = self.relu(out)
@@ -204,7 +208,7 @@ class Tree(nn.Module):
         self.project = None
         self.levels = levels
         if stride > 1:
-            self.downsample = nn.MaxPool2d(stride, stride=stride)
+            self.downsample = nn.MaxPool2d(stride, stride=stride, ceil_mode=True)
         if in_channels != out_channels:
             self.project = nn.Sequential(
                 nn.Conv2d(in_channels, out_channels,
@@ -218,6 +222,7 @@ class Tree(nn.Module):
         residual = self.project(bottom) if self.project else bottom
         if self.level_root:
             children.append(bottom)
+        
         x1 = self.tree1(x, residual)
         if self.levels == 1:
             x2 = self.tree2(x1)
@@ -540,8 +545,14 @@ class IDAUp(nn.Module):
         for i in range(startp + 1, endp):
             upsample = getattr(self, 'up_' + str(i - startp))
             project = getattr(self, 'proj_' + str(i - startp))
-            layers[i] = upsample(project(layers[i]))
+            projection = project(layers[i])
+            layers[i] = upsample(projection)
+            if layers[i].shape[2] == 82:
+                layers[i] = torch.split(layers[i], [81, 1], dim=2)[0]
             node = getattr(self, 'node_' + str(i - startp))
+            # print(layers[i].shape)
+            # print(layers[i - 1].shape)
+            # print('>>>>>>>>>>>>>>>>>')
             layers[i] = node(layers[i] + layers[i - 1])
 
 
