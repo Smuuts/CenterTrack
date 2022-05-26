@@ -60,10 +60,6 @@ class BasicBlock(nn.Module):
         out = self.conv2(out)
         out = self.bn2(out)
 
-        # print(out.shape)
-        # print(residual.shape)
-        # print('_----------------------_')
-
         out += residual
         out = self.relu(out)
 
@@ -550,9 +546,6 @@ class IDAUp(nn.Module):
             if layers[i].shape[2] == 82:
                 layers[i] = torch.split(layers[i], [81, 1], dim=2)[0]
             node = getattr(self, 'node_' + str(i - startp))
-            # print(layers[i].shape)
-            # print(layers[i - 1].shape)
-            # print('>>>>>>>>>>>>>>>>>')
             layers[i] = node(layers[i] + layers[i - 1])
 
 
