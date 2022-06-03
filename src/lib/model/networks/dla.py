@@ -543,6 +543,8 @@ class IDAUp(nn.Module):
             project = getattr(self, 'proj_' + str(i - startp))
             projection = project(layers[i])
             layers[i] = upsample(projection)
+            if layers[i].shape[3] == 82:
+                layers[i] = torch.split(layers[i], [81, 1], dim=3)[0]
             if layers[i].shape[2] == 82:
                 layers[i] = torch.split(layers[i], [81, 1], dim=2)[0]
             node = getattr(self, 'node_' + str(i - startp))
