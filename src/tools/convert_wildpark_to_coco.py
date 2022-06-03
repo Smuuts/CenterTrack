@@ -5,12 +5,13 @@ DATA_PATH = '../../data/WildparkDataset/'
 OUT_PATH = DATA_PATH + 'annotations/'
 IMG_PATH = DATA_PATH + 'annotated_frames/'
 
-SPLITS = ['train', 'test']
+SPLITS = ['train', 'test', 'val']
 
 if __name__ == '__main__':
     data = AnimalDatasetImagecsv(IMG_PATH, DATA_PATH + 'pre_csv.csv', 'Wildpark', preprocessed=True)
     ann_cnt = 0
-    for split in SPLITS:        # train and test split
+    for split in SPLITS:
+        print('Creating {} split.'.format(split))
         out_path = OUT_PATH + '{}.json'.format(split)
 
         out = {'images': [], 'annotations': [], 
@@ -26,7 +27,7 @@ if __name__ == '__main__':
             
             for j in range(split_index * imgs_per_split, (split_index + 1) * imgs_per_split):   # give every split equal part of video
                 frame = data.getframe(imgs[j])[1]
-                print(f'Converting {imgs[j]}')
+                # print(f'Converting {imgs[j]}')
 
                 img_id = int(frame['image_id'].item())
                 image_info = {'file_name': imgs[j],
@@ -44,11 +45,15 @@ if __name__ == '__main__':
                 out['images'].append(image_info)
 
                 for k in range(len(frame['boxes'])):
+                    # turn bbox to coco format
+                    points = frame['boxes'][k].tolist()
+                    bbox = [points[0], points[1], points[2] - points[0], points[3] - points[1]]
+                    
                     ann = {'id': ann_cnt,
                         'category_id': frame['labels'][k].item(),
                         'image_id': img_id,
                         'track_id': frame['track'][k].item(),
-                        'bbox': frame['boxes'][k].tolist(),
+                        'bbox': bbox,
                         'conf': 1.0}
 
                     ann_cnt = ann_cnt + 1                    
@@ -56,5 +61,6 @@ if __name__ == '__main__':
                     out['annotations'].append(ann)
 
         print(f'writing {split} split to {out_path}')
+        print('----------------------------')
         json.dump(out, open(out_path, 'w'))
     print('done!')
