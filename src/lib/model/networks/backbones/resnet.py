@@ -33,6 +33,7 @@ class BasicBlock(nn.Module):
 
     def __init__(self, inplanes, planes, stride=1, downsample=None):
         super(BasicBlock, self).__init__()
+        print('YEEEET')
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = nn.BatchNorm2d(planes, momentum=BN_MOMENTUM)
         self.relu = nn.ReLU(inplace=True)
@@ -110,7 +111,7 @@ resnet_spec = {18: (BasicBlock, [2, 2, 2, 2]),
 class Resnet(nn.Module):
     def __init__(self, opt):
         super().__init__()
-        assert (not opt.pre_hm) and (not opt.pre_img)
+        #assert (not opt.pre_hm) and (not opt.pre_img)
         self.inplanes = 64
         block, layers = resnet_spec[opt.num_layers]
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
@@ -149,7 +150,7 @@ class Resnet(nn.Module):
 
         return nn.Sequential(*layers)
 
-    def forward(self, x):
+    def forward(self, x, pre_hm=None, pre_img=None):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)

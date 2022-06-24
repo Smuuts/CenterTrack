@@ -65,7 +65,7 @@ def main(opt):
   )
 
   print(f'Number of Epochs: {opt.num_epochs - start_epoch}')
-
+  print(f'Learning Rate: {opt.lr}')
 
   print('Starting training...')
   for epoch in range(start_epoch + 1, opt.num_epochs + 1):
