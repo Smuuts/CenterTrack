@@ -1,0 +1,2 @@
+cd ../src/
+python main.py tracking --exp_id resnet --dataset custom --custom_dataset_ann_path ../data/WildparkDataset/annotations/train.json --custom_dataset_img_path ../data/WildparkDataset/annotated_frames --input_h 1296 --input_w 1728 --num_classes 2 --num_epochs 50 --batch_size 1 --lr 0.000125 --lr_step 25 --ltrb_amodal --same_aug --pre_hm --hm_disturb 0.05 --lost_disturb 0.4 --fp_disturb 0.1 --save_all --save_point 10,15,20,25,30,35,40,42,45,50,55,60 --arch generic --backbone resnet --gpus 0
