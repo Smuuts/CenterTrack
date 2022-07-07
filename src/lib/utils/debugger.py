@@ -18,7 +18,7 @@ class Debugger(object):
     self.theme = opt.debugger_theme
     self.plt = plt
     self.with_3d = False
-    self.names = dataset.class_name
+    self.names = ['red deer', ' fallow deer'] if opt.dataset == 'custom' else dataset.class_name
     self.out_size = 384 if opt.dataset == 'kitti' else 512
     self.cnt = 0
     colors = [(color_list[i]).astype(np.uint8) for i in range(len(color_list))]
