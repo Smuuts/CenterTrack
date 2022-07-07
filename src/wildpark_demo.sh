@@ -1,1 +1,1 @@
-python demo.py tracking --load_model ../models/wildpark_old.pth --num_class 2 --demo ../videos/Video1.mov --input_h 1296 --input_w 1728
+python demo.py tracking --exp_id wildpark --dataset custom --load_model ../exp/tracking/MobileNetV2/model_last.pth --num_class 2 --demo ../videos/RW_2020_11_10_VD_00151.mov --video_h 1296 --video_w 1728 --input_h 1296 --input_w 1728 --save_video --track_thresh 0.05 --new_thresh 0.15 --out_thresh 0.1 --pre_thresh 0.1  --vis_thresh 0.1 --arch generic --backbone mobilenet
