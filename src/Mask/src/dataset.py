@@ -23,9 +23,10 @@ class WildParkMaskDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, idx):
         image_path = os.path.join(self.img_path, self.imgs[idx]['file_name'])
-        img = cv2.imread(image_path)
+        img = Image.open(image_path)    
+        width, height = img.size
 
-        boxes, masks = self.__get_anns_of_image(self.imgs[idx]['id'], img.shape[1], img.shape[0])
+        boxes, masks = self.__get_anns_of_image(self.imgs[idx]['id'], width, height)
 
         num_objs = len(masks)
 
@@ -43,6 +44,10 @@ class WildParkMaskDataset(torch.utils.data.Dataset):
         target["image_id"] = image_id
         target["area"] = area
         target["iscrowd"] = iscrowd
+
+        if self.transforms is not None:
+            img, target = self.transforms(img, target)
+
         return img, target
 
     def __get_anns_of_image(self, idx, width, height):
@@ -69,4 +74,3 @@ class WildParkMaskDataset(torch.utils.data.Dataset):
 
         return boxes, masks
         
-
