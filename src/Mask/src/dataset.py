@@ -1,4 +1,5 @@
 import os
+from cv2 import idct
 import torch
 import json
 import numpy as np
@@ -66,8 +67,9 @@ class WildParkMaskDataset(torch.utils.data.Dataset):
             x_val = np.array(ann['segmentation'][::2]).reshape((len(ann['segmentation'][::2]), 1))
             y_val = np.array(ann['segmentation'][1::2]).reshape((len(ann['segmentation'][::2]), 1))
 
-            points = np.concatenate((x_val, y_val), axis=1)
+            points = np.concatenate((x_val.astype(int), y_val.astype(int)), axis=1)
             mask = cv2.drawContours(mask, [points], 0, (1), thickness=cv2.FILLED)
+            
 
             box = [ann['bbox'][0], ann['bbox'][1], ann['bbox'][0] + ann['bbox'][2], ann['bbox'][1] + ann['bbox'][3]]
             masks.append(mask)
