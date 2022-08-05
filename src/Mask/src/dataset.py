@@ -4,6 +4,7 @@ import json
 import numpy as np
 import cv2
 from PIL import Image
+import transforms as T
 
 class WildParkMaskDataset(torch.utils.data.Dataset):
     def __init__(self, img_path, ann_path, split, transforms):
@@ -74,3 +75,9 @@ class WildParkMaskDataset(torch.utils.data.Dataset):
 
         return boxes, masks
         
+def get_transform(train):
+    transforms = []
+    transforms.append(T.ToTensor())
+    if train:
+        transforms.append(T.RandomHorizontalFlip(0.5))
+    return T.Compose(transforms)
