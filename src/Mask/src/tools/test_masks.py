@@ -17,7 +17,7 @@ def get_image_from_id(data, path, image_id):
     
     return cv2.imread(os.path.join(path, filename))
 
-split = 'val'
+split = 'train'
 img_dest = f'/home/smuuts/Documents/uni/PG/CenterTrack/data/Mask R-CNN/frames/{split}/'
 ann_dest = f'/home/smuuts/Documents/uni/PG/CenterTrack/data/Mask R-CNN/annotations/{split}.json'
 
@@ -30,9 +30,9 @@ for i in range(len(ann_data['annotations'])):
     x_val = np.array(ann['segmentation'][::2]).reshape((len(ann['segmentation'][::2]), 1))
     y_val = np.array(ann['segmentation'][1::2]).reshape((len(ann['segmentation'][::2]), 1))
 
-    points = np.concatenate((x_val, y_val), axis=1)
+    points = np.concatenate((x_val.astype(int), y_val.astype(int)), axis=1)
     img = get_image_from_id(data=ann_data['images'], path=img_dest, image_id=ann['image_id'])
-
+    print([points])
     img = cv2.drawContours(img, [points], 0, (255, 255, 255), thickness=cv2.FILLED)
     
     plt.imshow(img)

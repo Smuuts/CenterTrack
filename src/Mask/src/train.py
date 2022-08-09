@@ -6,11 +6,10 @@ from model import get_model_instance_segmentation
 import utils
 from engine import train_one_epoch, evaluate
 
+split = 'train'
 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
-print(f'using {device} device.')
-
-split = 'test'
+model_path = '/home/smuuts/Documents/uni/PG/CenterTrack/src/Mask/models/model_1.pth'
+resume = True
 
 img_path = '/home/smuuts/Documents/uni/PG/CenterTrack/data/Mask R-CNN/frames/'
 ann_path = '/home/smuuts/Documents/uni/PG/CenterTrack/data/Mask R-CNN/annotations/'
@@ -18,12 +17,12 @@ ann_path = '/home/smuuts/Documents/uni/PG/CenterTrack/data/Mask R-CNN/annotation
 def main():
     # train on the GPU or on the CPU, if a GPU is not available
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-
+    print(f'using {device} device.')
     # our dataset has two classes only - background and person
     num_classes = 2
     # use our dataset and defined transformations
-    dataset = WildParkMaskDataset(img_path, ann_path, 'test', get_transform(train=True))
-    dataset_test = WildParkMaskDataset(img_path, ann_path, 'test', get_transform(train=False))
+    dataset = WildParkMaskDataset(img_path, ann_path, split, get_transform(train=True))
+    dataset_test = WildParkMaskDataset(img_path, ann_path, split, get_transform(train=False))
 
     # split the dataset in train and test set
     indices = torch.randperm(len(dataset)).tolist()
@@ -42,6 +41,9 @@ def main():
     # get the model using our helper function
     model = get_model_instance_segmentation(num_classes, pretrained=True)
 
+    if resume == True:
+        model.load_state_dict(torch.load(model_path))
+
     # move model to the right device
     model.to(device)
 
@@ -54,18 +56,19 @@ def main():
                                                    step_size=3,
                                                    gamma=0.1)
 
-    num_epochs = 2
+    num_epochs = 5
 
     for epoch in range(num_epochs):
         # train for one epoch, printing every 10 iterations
         train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq=10)
+        torch.save(model.state_dict(), f'/home/smuuts/Documents/uni/PG/CenterTrack/src/Mask/models/model_{epoch+2}.pth')
         # update the learning rate
         lr_scheduler.step()
         # evaluate on the test dataset
         # evaluate(model, data_loader_test, device=device)
 
     print('Saving model...')
-    torch.save(model.state_dict(), '/home/smuuts/Documents/uni/PG/CenterTrack/src/Mask/models/test.pth')
+    torch.save(model.state_dict(), '/home/smuuts/Documents/uni/PG/CenterTrack/src/Mask/models/model_last.pth')
 
     print('Done!')
 
