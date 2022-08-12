@@ -69,7 +69,7 @@ IMG_HEIGHT = 1296
 MIN_BOX_SIZE = 512
 PADDING = 50
 
-split = 'train'
+split = 'test'
 
 img_path = f'/home/smuuts/Documents/uni/PG/CenterTrack/data/WildparkDataset/annotated_frames/'
 ann_path = f'/home/smuuts/Documents/uni/PG/CenterTrack/data/WildparkDataset/annotations/{split}.json'

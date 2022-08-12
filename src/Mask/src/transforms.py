@@ -35,12 +35,15 @@ class RandomHorizontalFlip(object):
             image = image.flip(-1)
             if "masks" in target:
                 for i in range(len(target['masks'])):
-                    
                     mask = torch.permute(target["masks"][i], (2, 0, 1))
                     target["masks"][i] = torch.permute(mask.flip(-1), (1, 2, 0))
 
                     box = get_bbox_from_mask(target['masks'][i])
-                    target['boxes'][i] = box
+                    if box == None:
+                        target['boxes'] = torch.cat([target['boxes'][0:i], target['boxes'][i+1:]])
+                        target['masks'] = torch.cat([target['masks'][0:i], target['masks'][i+1:]])
+                    else:
+                        target['boxes'][i] = box
 
         return image, target
 
@@ -68,13 +71,21 @@ class RandomRotate(object):
     def __call__(self, image, target):
         angle = self.__get_angle()
         image = F.rotate(image, angle)
-
-        for i in range(len(target['masks'])):
+        
+        mask_amt = len(target['masks'])
+        for i in range(mask_amt):
             mask = torch.permute(target['masks'][i], (2, 0, 1))
             mask = torch.permute(F.rotate(mask, angle), (1, 2, 0))
             target['masks'][i] = mask
 
-            target['boxes'][i] = get_bbox_from_mask(mask)
+            box = get_bbox_from_mask(mask)
+            if box == None:
+                target['boxes'] = torch.cat([target['boxes'][0:i], target['boxes'][i+1:]])
+                target['masks'] = torch.cat([target['masks'][0:i], target['masks'][i+1:]])
+                if i == len(target['masks']):
+                    break
+            else:
+                target['boxes'][i] = box
 
         return image, target
 
@@ -102,11 +113,16 @@ def get_bbox_from_mask(mask):
             if mask[col][row] >= 1:
                 points.append(row)
                 points.append(col)
-    
+    if len(points) <= 0:
+        return torch.tensor([0, 0, 50, 50])
+
     x1 = min(points[::2])
     y1 = min(points[1::2])
     x2 = max(points[::2])
     y2 = max(points[1::2])
+
+    if x2 - x1 <= 0 or y2 - y1 <= 0:
+        return torch.tensor([0, 0, 50, 50])
 
     return torch.tensor([x1, y1, x2, y2])
 

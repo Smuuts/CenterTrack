@@ -42,7 +42,7 @@ class AnimalDatasetImagecsv(object):
             elif(datasettype=="BayWald"):
                 self.classdict= {"roe deer":1, "red deer":2}
             elif(datasettype=="Wildpark"):
-                self.classdict= {"red deer":1, "roe deer":2} 
+                self.classdict= {"red deer":1, "fallow deer":2} 
             # for splitting attribut values, insert the new columns
             self.csvdata['track'] = pd.Series(np.random.randn(self.csvdata.shape[0]), index=self.csvdata.index)
             ### if you deal with intermediate data you also have a score value saved
@@ -263,7 +263,7 @@ def preprocess_data(path,annotationfile, datasettype):
         elif(datasettype=="BayWald"):
             classdict= {"roe deer":1, "red deer":2}
         elif(datasettype=="Wildpark"):
-            classdict= {"red deer":1, "roe deer":2} 
+            classdict= {"red deer":1, "fallow deer":2} 
         # for splitting attribut values, insert the new columns
         csvdata['track'] = pd.Series(np.random.randn(csvdata.shape[0]), index=csvdata.index)
         csvdata.insert(6,"ypoints",pd.Series(np.random.randn(csvdata.shape[0]), index=csvdata.index))

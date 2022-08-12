@@ -81,7 +81,7 @@ def get_transform(train):
     transforms.append(T.ToTensor())
     if train:
         transforms.append(T.RandomHorizontalFlip(0.5))
-        transforms.append(T.GaussianBlur(kernel=5, sigma=(0.1, 2.0)))
-        transforms.append(T.RandomRotate((-15, 15)))
-        # transforms.append(T.ColorJitter(0.3, 0.1, 0.1, 0))
+        transforms.append(T.GaussianBlur(kernel=5, sigma=(0.5, 1.5)))
+        # transforms.append(T.RandomRotate((-15, 15)))
+        transforms.append(T.ColorJitter(0.01, 0.1, 0.1, 0))
     return T.Compose(transforms)

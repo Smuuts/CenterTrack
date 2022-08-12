@@ -23,15 +23,15 @@ def draw_mask(img, mask, alpha, color, beta):
 img_path = '/home/smuuts/Documents/uni/PG/CenterTrack/data/Mask R-CNN/frames/'
 ann_path = '/home/smuuts/Documents/uni/PG/CenterTrack/data/Mask R-CNN/annotations/'
 
-dataset_test = WildParkMaskDataset(img_path, ann_path, 'train', get_transform(train=False))
+dataset_test = WildParkMaskDataset(img_path, ann_path, 'test', get_transform(train=False))
 
-model_path = '/home/smuuts/Documents/uni/PG/CenterTrack/src/Mask/models/model_last.pth'
+model_path = '/home/smuuts/Documents/uni/PG/CenterTrack/src/Mask/models/model_1.pth'
 
 model = get_model_instance_segmentation(pretrained=False, num_classes=2)
 model.load_state_dict(torch.load(model_path))
 model.eval()
 
-img, target = dataset_test[10000]
+img, target = dataset_test[1]
 
 predictions = model([img])
 
@@ -41,7 +41,8 @@ i = 0
 new_img = img
 mask_amt = len(predictions[0]['masks'])
 print(f'{mask_amt} masks predicted')
-for mask in predictions[0]['masks']:
+for i in range(len(predictions[0]['masks']) -6):
+    mask = predictions[0]['masks'][i]
     mask = mask.detach().cpu().numpy()
     new_img = draw_mask(new_img, mask, 1, colors[i%len(colors)], 1)
     i+=1

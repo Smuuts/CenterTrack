@@ -25,11 +25,14 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq, sc
         )
 
     for images, targets in metric_logger.log_every(data_loader, print_freq, header):
+        log = open('log.txt', 'a')
+
         images = list(image.to(device) for image in images)
         targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
         with torch.cuda.amp.autocast(enabled=scaler is not None):
             loss_dict = model(images, targets)
             losses = sum(loss for loss in loss_dict.values())
+            log.write(f'{losses.item()}\n')
 
         # reduce losses over all GPUs for logging purposes
         loss_dict_reduced = utils.reduce_dict(loss_dict)
@@ -56,6 +59,8 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq, sc
 
         metric_logger.update(loss=losses_reduced, **loss_dict_reduced)
         metric_logger.update(lr=optimizer.param_groups[0]["lr"])
+        log.close()
+
 
     return metric_logger
 

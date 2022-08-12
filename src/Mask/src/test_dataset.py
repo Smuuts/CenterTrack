@@ -23,9 +23,10 @@ def draw_mask(img, mask, alpha, color, beta):
 img_path = '/home/smuuts/Documents/uni/PG/CenterTrack/data/Mask R-CNN/frames/'
 ann_path = '/home/smuuts/Documents/uni/PG/CenterTrack/data/Mask R-CNN/annotations/'
 
-dataset_test = WildParkMaskDataset(img_path, ann_path, 'train', get_transform(train=True))
+dataset_test = WildParkMaskDataset(img_path, ann_path, 'train_5', get_transform(train=True))
 
-img, target = dataset_test[11000]
+print(f'{len(dataset_test)} images.')
+img, target = dataset_test[5000]
 
 img = img.detach().cpu().numpy() * 255
 i = 0
@@ -39,7 +40,7 @@ for i in range(len(target['masks'])):
 
     box = target['boxes'][i].detach().cpu().numpy().astype(int)
     new_img = new_img.transpose(1, 2, 0).copy()
-    new_img = cv2.rectangle(new_img, (box[0], box[1]), (box[2], box[3]), color=colors[i%len(colors)], thickness=5)
+    new_img = cv2.rectangle(new_img, (box[0], box[1]), (box[2], box[3]), color=colors[i%len(colors)], thickness=2)
     new_img = new_img.transpose(2, 0, 1).copy()
 
     i+=1
