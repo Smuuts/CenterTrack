@@ -21,7 +21,7 @@ class WildParkMaskDataset(torch.utils.data.Dataset):
         self.anns = self.ann_data['annotations']
     
     def __len__(self):
-        return int(len(self.imgs)/4)
+        return int(len(self.imgs))
 
     def __getitem__(self, idx):
         image_path = os.path.join(self.img_path, self.imgs[idx]['file_name'])
@@ -62,7 +62,7 @@ class WildParkMaskDataset(torch.utils.data.Dataset):
                 annotations.append(annotation.copy())
 
         for ann in annotations:
-            mask = np.zeros((height, width, 1), np.uint8)
+            mask = np.zeros((height, width), np.uint8)
 
             x_val = np.array(ann['segmentation'][::2]).reshape((len(ann['segmentation'][::2]), 1))
             y_val = np.array(ann['segmentation'][1::2]).reshape((len(ann['segmentation'][::2]), 1))

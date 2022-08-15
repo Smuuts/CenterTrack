@@ -35,8 +35,8 @@ class RandomHorizontalFlip(object):
             image = image.flip(-1)
             if "masks" in target:
                 for i in range(len(target['masks'])):
-                    mask = torch.permute(target["masks"][i], (2, 0, 1))
-                    target["masks"][i] = torch.permute(mask.flip(-1), (1, 2, 0))
+                    mask = target["masks"][i]
+                    target["masks"][i] = mask.flip(-1)
 
                     box = get_bbox_from_mask(target['masks'][i])
                     if box == None:
@@ -74,8 +74,8 @@ class RandomRotate(object):
         
         mask_amt = len(target['masks'])
         for i in range(mask_amt):
-            mask = torch.permute(target['masks'][i], (2, 0, 1))
-            mask = torch.permute(F.rotate(mask, angle), (1, 2, 0))
+            mask = target['masks'][i]
+            mask = F.rotate(mask, angle)
             target['masks'][i] = mask
 
             box = get_bbox_from_mask(mask)

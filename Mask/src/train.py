@@ -6,10 +6,10 @@ from model import get_model_instance_segmentation
 import utils
 from engine import train_one_epoch, evaluate
 
-split = 'train'
+torch.manual_seed(64)
 
 model_path = '/home/smuuts/Documents/uni/PG/CenterTrack/src/Mask/models/model_1.pth'
-resume = True
+resume = False
 
 img_path = '/home/smuuts/Documents/uni/PG/CenterTrack/data/Mask R-CNN/frames/'
 ann_path = '/home/smuuts/Documents/uni/PG/CenterTrack/data/Mask R-CNN/annotations/'
@@ -21,13 +21,11 @@ def main():
     # our dataset has two classes only - background and person
     num_classes = 2
     # use our dataset and defined transformations
-    dataset = WildParkMaskDataset(img_path, ann_path, split, get_transform(train=True))
-    dataset_test = WildParkMaskDataset(img_path, ann_path, split, get_transform(train=False))
+    dataset = WildParkMaskDataset(img_path, ann_path, 'train_5', get_transform(train=True))
+    dataset_test = WildParkMaskDataset(img_path, ann_path, 'test', get_transform(train=False))
 
-    # split the dataset in train and test set
     indices = torch.randperm(len(dataset)).tolist()
-    dataset = torch.utils.data.Subset(dataset, indices[:-50])
-    dataset_test = torch.utils.data.Subset(dataset_test, indices[-50:])
+    dataset = torch.utils.data.Subset(dataset, indices[:(int(len(dataset)/5))])
 
     # define training and validation data loaders
     data_loader = torch.utils.data.DataLoader(
@@ -42,6 +40,7 @@ def main():
     model = get_model_instance_segmentation(num_classes, pretrained=True)
 
     if resume == True:
+        print(f'loaded model: {model_path}')
         model.load_state_dict(torch.load(model_path))
 
     # move model to the right device
@@ -56,16 +55,16 @@ def main():
                                                    step_size=3,
                                                    gamma=0.1)
 
-    num_epochs = 5
+    num_epochs = 10
 
     for epoch in range(num_epochs):
         # train for one epoch, printing every 10 iterations
         train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq=10)
-        torch.save(model.state_dict(), f'/home/smuuts/Documents/uni/PG/CenterTrack/src/Mask/models/model_{epoch+2}.pth')
+        torch.save(model.state_dict(), f'/home/smuuts/Documents/uni/PG/CenterTrack/src/Mask/models/model_{epoch+1}.pth')
         # update the learning rate
         lr_scheduler.step()
         # evaluate on the test dataset
-        # evaluate(model, data_loader_test, device=device)
+        evaluate(model, data_loader_test, device=device)
 
     print('Saving model...')
     torch.save(model.state_dict(), '/home/smuuts/Documents/uni/PG/CenterTrack/src/Mask/models/model_last.pth')

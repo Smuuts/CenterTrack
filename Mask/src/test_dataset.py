@@ -15,18 +15,18 @@ colors = [
 
 def draw_mask(img, mask, alpha, color, beta):
     img = img.copy()
-    for i in range(len(color)):
-        img[i] = img[i] * alpha + mask[0] * color[i] * beta
     
+    for i in range(len(color)):
+        img[i] = img[i] * alpha + mask * color[i] * beta
     return img
 
 img_path = '/home/smuuts/Documents/uni/PG/CenterTrack/data/Mask R-CNN/frames/'
 ann_path = '/home/smuuts/Documents/uni/PG/CenterTrack/data/Mask R-CNN/annotations/'
 
-dataset_test = WildParkMaskDataset(img_path, ann_path, 'train_5', get_transform(train=True))
+dataset_test = WildParkMaskDataset(img_path, ann_path, 'test', get_transform(train=True))
 
-print(f'{len(dataset_test)} images.')
-img, target = dataset_test[5000]
+print(f'{len(dataset_test) * 4} images.')
+img, target = dataset_test[1000]
 
 img = img.detach().cpu().numpy() * 255
 i = 0
@@ -35,7 +35,7 @@ new_img = img
 mask_amt = len(target['masks'])
 print(f'{mask_amt} masks')
 for i in range(len(target['masks'])):
-    mask = torch.permute(target['masks'][i].detach().cpu(), (2, 0, 1)).numpy()
+    mask = target['masks'][i].detach().cpu().numpy()
     new_img = draw_mask(new_img, mask, 1, colors[i%len(colors)], 1)
 
     box = target['boxes'][i].detach().cpu().numpy().astype(int)
