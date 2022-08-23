@@ -15,9 +15,9 @@ colors = [
 
 def draw_mask(img, mask, alpha, color, beta):
     img = img.copy()
-    for i in range(len(color)):
-        img[i] = img[i] * alpha + mask[0] * color[i] * beta
     
+    for i in range(len(color)):
+        img[i] = img[i] * alpha + mask * color[i] * beta
     return img
 
 img_path = '/home/smuuts/Documents/uni/PG/CenterTrack/data/Mask R-CNN/frames/'
@@ -25,27 +25,37 @@ ann_path = '/home/smuuts/Documents/uni/PG/CenterTrack/data/Mask R-CNN/annotation
 
 dataset_test = WildParkMaskDataset(img_path, ann_path, 'test', get_transform(train=False))
 
-model_path = '/home/smuuts/Documents/uni/PG/CenterTrack/src/Mask/models/model_1.pth'
+model_path = '/home/smuuts/Documents/uni/PG/CenterTrack/Mask/models/model_1.pth'
 
-model = get_model_instance_segmentation(pretrained=False, num_classes=2)
+model = get_model_instance_segmentation(pretrained=True, num_classes=2)
 model.load_state_dict(torch.load(model_path))
 model.eval()
+print('checkpoint 1')
 
-img, target = dataset_test[1]
+img, target = dataset_test[5]
+print(img.shape)
+print('checkpoint 2')
 
 predictions = model([img])
+
+print('checkpoint 3')
+
 
 img = img.detach().cpu().numpy() * 255
 i = 0
 
+
 new_img = img
 mask_amt = len(predictions[0]['masks'])
+
 print(f'{mask_amt} masks predicted')
-for i in range(len(predictions[0]['masks']) -6):
+for i in range(len(predictions[0]['masks'])):
     mask = predictions[0]['masks'][i]
     mask = mask.detach().cpu().numpy()
     new_img = draw_mask(new_img, mask, 1, colors[i%len(colors)], 1)
     i+=1
+
+print('checkpoint 4')
 
 new_img = new_img.transpose(1, 2, 0)
 new_img = cv2.cvtColor(new_img, cv2.COLOR_BGR2RGB)

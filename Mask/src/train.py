@@ -4,11 +4,11 @@ import torchvision
 from dataset import WildParkMaskDataset, get_transform
 from model import get_model_instance_segmentation
 import utils
-from engine import train_one_epoch, evaluate
+from engine import train_one_epoch
 
 torch.manual_seed(64)
 
-model_path = '/home/smuuts/Documents/uni/PG/CenterTrack/src/Mask/models/model_1.pth'
+model_path = '/home/smuuts/Documents/uni/PG/CenterTrack/Mask/models/model_1.pth'
 resume = False
 
 img_path = '/home/smuuts/Documents/uni/PG/CenterTrack/data/Mask R-CNN/frames/'
@@ -29,7 +29,7 @@ def main():
 
     # define training and validation data loaders
     data_loader = torch.utils.data.DataLoader(
-        dataset, batch_size=5, shuffle=True, num_workers=4,
+        dataset, batch_size=3, shuffle=True, num_workers=4,
         collate_fn=utils.collate_fn)
 
     data_loader_test = torch.utils.data.DataLoader(
@@ -55,19 +55,19 @@ def main():
                                                    step_size=3,
                                                    gamma=0.1)
 
-    num_epochs = 10
+    num_epochs = 5
 
     for epoch in range(num_epochs):
         # train for one epoch, printing every 10 iterations
-        train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq=10)
-        torch.save(model.state_dict(), f'/home/smuuts/Documents/uni/PG/CenterTrack/src/Mask/models/model_{epoch+1}.pth')
+        train_one_epoch(model, optimizer, data_loader, device, epoch)
+        torch.save(model.state_dict(), f'/home/smuuts/Documents/uni/PG/CenterTrack/Mask/models/model_{epoch+1}.pth')
         # update the learning rate
         lr_scheduler.step()
         # evaluate on the test dataset
-        evaluate(model, data_loader_test, device=device)
+        # evaluate(model, data_loader_test, device=device)
 
     print('Saving model...')
-    torch.save(model.state_dict(), '/home/smuuts/Documents/uni/PG/CenterTrack/src/Mask/models/model_last.pth')
+    torch.save(model.state_dict(), '/home/smuuts/Documents/uni/PG/CenterTrack/Mask/models/model_last.pth')
 
     print('Done!')
 

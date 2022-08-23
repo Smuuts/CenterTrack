@@ -1,7 +1,7 @@
 import random
 import torch
 import random
-import numpy as np
+from PIL import ImageFilter
 
 from torchvision.transforms import functional as F
 import torchvision.transforms as T
@@ -39,11 +39,7 @@ class RandomHorizontalFlip(object):
                     target["masks"][i] = mask.flip(-1)
 
                     box = get_bbox_from_mask(target['masks'][i])
-                    if box == None:
-                        target['boxes'] = torch.cat([target['boxes'][0:i], target['boxes'][i+1:]])
-                        target['masks'] = torch.cat([target['masks'][0:i], target['masks'][i+1:]])
-                    else:
-                        target['boxes'][i] = box
+                    target['boxes'][i] = box
 
         return image, target
 
@@ -58,7 +54,7 @@ class GaussianBlur(object):
         self.kernel = kernel
         self.sigma = sigma
     def __call__(self, image, target):
-        image = F.gaussian_blur(image, self.kernel, self.__get_sigma())
+        image = image.filter(ImageFilter.GaussianBlur(self.__get_sigma()))
         return image, target
 
     def __get_sigma(self):
@@ -76,16 +72,11 @@ class RandomRotate(object):
         for i in range(mask_amt):
             mask = target['masks'][i]
             mask = F.rotate(mask, angle)
+            
             target['masks'][i] = mask
 
             box = get_bbox_from_mask(mask)
-            if box == None:
-                target['boxes'] = torch.cat([target['boxes'][0:i], target['boxes'][i+1:]])
-                target['masks'] = torch.cat([target['masks'][0:i], target['masks'][i+1:]])
-                if i == len(target['masks']):
-                    break
-            else:
-                target['boxes'][i] = box
+            target['boxes'][i] = box
 
         return image, target
 

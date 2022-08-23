@@ -7,7 +7,7 @@ DATA_PATH = '../../data/WildparkDataset/'
 OUT_PATH = DATA_PATH + 'annotations/'
 IMG_PATH = DATA_PATH + 'annotated_frames/'
 
-SPLITS = {'train':3, 'test':1, 'val':1}
+SPLITS = {'test':1, 'train_5':5}
 
 if __name__ == '__main__':
     data = AnimalDatasetImagecsv(IMG_PATH, DATA_PATH + 'preprocessed.csv', 'Wildpark', preprocessed=True)
@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
         out = {'images': [], 'annotations': [], 
            'categories': [{'id': 1, 'name': 'red deer'}, {'id': 2, 'name': 'fallow deer'}],
-           'videos': [{'id': 3, 'file_name': 'DW_2020_11_10_VD_00051'}, {'id': 8, 'file_name': 'RW_2020_11_10_VD_00151'}, {'id': 2, 'file_name': 'DW_2020_12_02_VD_00315'}, {'id': 1, 'file_name': 'RW_2020_12_16_VD_00008'}, {'id': 4, 'file_name': 'DW_2020_12_16_VD_00003'}]}
+           'videos': [{'id': 3, 'file_name': 'DW_2020_11_10_VD_00051'}, {'id': 8, 'file_name': 'RW_2020_11_10_VD_00151'}, {'id': 2, 'file_name': 'DW_2020_12_02_VD_00315'}, {'id': 1, 'file_name': 'RW_2020_12_16_VD_00008'}, {'id': 4, 'file_name': 'DW_2020_12_16_VD_00003'}, {'id': 7, 'file_name': 'RW_2020_11_26_VD_00024'}]}
 
         for i in range(current_video, current_video + SPLITS[split]):
             imgs = data[i]
