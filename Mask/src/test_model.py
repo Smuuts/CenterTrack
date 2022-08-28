@@ -27,13 +27,14 @@ dataset_test = WildParkMaskDataset(img_path, ann_path, 'test', get_transform(tra
 
 model_path = '/home/smuuts/Documents/uni/PG/CenterTrack/Mask/models/model_1.pth'
 
-model = get_model_instance_segmentation(pretrained=True, num_classes=2)
+model = get_model_instance_segmentation(pretrained=False, num_classes=2)
 model.load_state_dict(torch.load(model_path))
 model.eval()
+print(torch.version.cuda)
 print('checkpoint 1')
 
 img, target = dataset_test[5]
-print(img.shape)
+
 print('checkpoint 2')
 
 predictions = model([img])
