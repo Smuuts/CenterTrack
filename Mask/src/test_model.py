@@ -30,16 +30,10 @@ model_path = '/home/smuuts/Documents/uni/PG/CenterTrack/Mask/models/model_1.pth'
 model = get_model_instance_segmentation(pretrained=False, num_classes=2)
 model.load_state_dict(torch.load(model_path))
 model.eval()
-print(torch.version.cuda)
-print('checkpoint 1')
 
-img, target = dataset_test[5]
-
-print('checkpoint 2')
+img, target = dataset_test[4]
 
 predictions = model([img])
-
-print('checkpoint 3')
 
 
 img = img.detach().cpu().numpy() * 255
@@ -55,8 +49,6 @@ for i in range(len(predictions[0]['masks'])):
     mask = mask.detach().cpu().numpy()
     new_img = draw_mask(new_img, mask, 1, colors[i%len(colors)], 1)
     i+=1
-
-print('checkpoint 4')
 
 new_img = new_img.transpose(1, 2, 0)
 new_img = cv2.cvtColor(new_img, cv2.COLOR_BGR2RGB)
