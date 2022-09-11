@@ -1,2 +1,2 @@
 cd ..
-python run.py tracking --load_model /home/smuuts/Documents/uni/PG/CenterTrack/models/wildpark_30.pth --num_class 2 --video_h 1296 --video_w 1728 --input_h 1296 --input_w 1728
+python run.py tracking --load_model /home/smuuts/Documents/uni/PG/CenterTrack/models/wildpark_30.pth --num_class 2 --video_h 1296 --video_w 1728 --input_h 1296 --input_w 1728 --vis_thresh 0.1 --out_thresh 0.1 --pre_thresh 0.1 --track_thresh 0.1 --new_thresh 0.3
